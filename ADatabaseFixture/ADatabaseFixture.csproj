@@ -9,6 +9,7 @@
     <NoWarn>1591</NoWarn>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -17,12 +18,13 @@
     <Description>ADatabaseFixture, an appeasing database fixture</Description>
     <PackageTags>ADatabaseFixture;Database;Fixture;Integration Tests</PackageTags>
     <PackageProjectUrl>https://github.com/carl-berg/adatabasefixture</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/carl-berg/adatabasefixture/master/icon.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="" />
+    <None Include="..\icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
