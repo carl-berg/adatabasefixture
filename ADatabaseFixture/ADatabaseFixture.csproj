@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>8.0</LangVersion>
+    <Version>0.1.0</Version>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <Authors>Carl Berg</Authors>
+    <Copyright>Copyright (c) $([System.DateTime]::Now.Year) Carl Berg</Copyright>
+    <Description>ADatabaseFixture, an appeasing database fixture</Description>
+    <PackageTags>ADatabaseFixture;Database;Fixture;Integration Tests</PackageTags>
+    <PackageProjectUrl>https://github.com/carl-berg/adatabasefixture</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/carl-berg/adatabasefixture/master/icon.png</PackageIconUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+</Project>
