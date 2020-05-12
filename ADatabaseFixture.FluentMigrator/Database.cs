@@ -1,4 +1,4 @@
-﻿namespace ADatabaseFixture.FluentMigratorCustomNamespace
+﻿namespace ADatabaseFixture.FluentMigrator
 {
     /// <summary>
     /// Predefined database versions

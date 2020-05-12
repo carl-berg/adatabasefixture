@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Reflection;
 
-namespace ADatabaseFixture.FluentMigratorCustomNamespace
+namespace ADatabaseFixture.FluentMigrator
 {
     public class FluentMigratorMigrator : IMigrator
     {
