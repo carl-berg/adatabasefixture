@@ -27,3 +27,6 @@ Initial version
 
 ### 0.1.1
 Added migrator versioning tables
+
+### 0.1.2
+Made migrator versioning tables static instead to be able to use with Respawn checkpoint (which should be a static instance)

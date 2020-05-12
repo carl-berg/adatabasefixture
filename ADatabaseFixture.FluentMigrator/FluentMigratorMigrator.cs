@@ -10,7 +10,7 @@ namespace ADatabaseFixture.FluentMigratorCustomNamespace
         private readonly Action<IMigrationRunnerBuilder> _configure;
         private readonly Assembly[] _assembliesContainingMigrations;
 
-        public string[] VersioningTables => new[] { "VersionInfo" };
+        public static string[] VersioningTables => new[] { "VersionInfo" };
 
         internal FluentMigratorMigrator(Action<IMigrationRunnerBuilder> configure, params Assembly[] assembliesContainingMigrations)
         {
