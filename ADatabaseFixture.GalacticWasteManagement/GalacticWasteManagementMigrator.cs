@@ -8,6 +8,8 @@ namespace ADatabaseFixture.GalacticWasteManagement
         private readonly Func<string, GalacticWasteManager> _createManager;
         private readonly string _migrationMode;
 
+        public string[] VersioningTables => new[] { "SchemaVersionJournal" };
+
         internal GalacticWasteManagementMigrator(Func<string, GalacticWasteManager> createManager, string migrationMode)
         {
             _createManager = createManager;

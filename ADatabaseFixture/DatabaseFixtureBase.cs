@@ -45,5 +45,7 @@ namespace ADatabaseFixture
             Migrator.MigrateUp(connectionString);
             return connectionString;
         }
+
+        public string[] MigratorVersioningTables => Migrator.VersioningTables;
     }
 }
