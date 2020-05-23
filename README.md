@@ -22,14 +22,27 @@ In this example we will use the GalacticWasteManagement migrator as an example, 
 ```csharp
 public class DatabaseFixture : DatabaseFixtureBase
 {
-    public DatabaseFixture()
-        : base(new SqlServerDatabaseAdapter(), GalacticWasteManagementMigrator.Create<AssemblyTypeContainingMigration>())
+    public DatabaseFixture() : base(
+            new SqlServerDatabaseAdapter(), 
+            GalacticWasteManagementMigrator.Create<AssemblyTypeContainingMigration>())
     {
     }
 }
 ```
 
-2. Optional: Create a base class for your tests (optionally using CaptainData and Respawn)
+2. Create a collection definition using your fixture (xUnit specific). The purpose for this is to only have your fixture created once and reused for all your integration tests
+
+```csharp
+[CollectionDefinition("DatabaseIntegrationTest")]
+public class DatabaseCollectionDefinition : ICollectionFixture<DatabaseFixture>
+{
+    // This class has no code, and is never created. Its purpose is simply
+    // to be the place to apply [CollectionDefinition] and all the
+    // ICollectionFixture<> interfaces.
+}
+```
+
+3. Optional: Create a base class for your tests (optionally using CaptainData and Respawn)
 ```csharp
 [Collection("DatabaseIntegrationTest")]
 public abstract class DatabaseTest : IDisposable
@@ -55,20 +68,8 @@ public abstract class DatabaseTest : IDisposable
 }
 ```
 
-3. Create a collection definition using your fixture (xUnit specific). The purpose for this is to only have your fixture created once and reused for all your integration tests
-
-```csharp
-[CollectionDefinition("DatabaseIntegrationTest")]
-public class DatabaseCollectionDefinition : ICollectionFixture<DatabaseFixture>
-{
-    // This class has no code, and is never created. Its purpose is simply
-    // to be the place to apply [CollectionDefinition] and all the
-    // ICollectionFixture<> interfaces.
-}
-```
-
 4. Go ahead and write your first integration test
-```
+```csharp
 public class Mytest : DatabaseTest
 {
     public Mytest(DatabaseFixture fixture) : base(fixture) { }
