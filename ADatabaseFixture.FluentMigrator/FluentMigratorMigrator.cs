@@ -30,9 +30,11 @@ namespace ADatabaseFixture.FluentMigrator
                 })
                 .BuildServiceProvider(false);
 
-            serviceProvider
-                .GetService<IMigrationRunner>()
-                .MigrateUp();
+            using(var scope = serviceProvider.CreateScope())
+            {
+                scope.ServiceProvider.GetService<IMigrationRunner>().MigrateUp();
+            }
+
         }
 
         public static IMigrator Create<AssemblyTypeContainingMigration>(Database database) => database switch
