@@ -21,10 +21,10 @@ namespace ADatabaseFixture.GalacticWasteManagement
         public void MigrateUp(string connectionString)
         {
             var migrator = _createManager(connectionString);
-            _configureManager?.Invoke(migrator);
             var output = new DebugLogger();
             migrator.Logger = output;
             migrator.Output = output;
+            _configureManager?.Invoke(migrator);
             migrator.Update(_migrationMode).GetAwaiter().GetResult();
         }
 
