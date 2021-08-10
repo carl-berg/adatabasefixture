@@ -45,7 +45,7 @@ public class DatabaseCollectionDefinition : ICollectionFixture<DatabaseFixture>
 3. Optional: Create a base class for your tests (optionally using CaptainData and Respawn)
 ```csharp
 [Collection("DatabaseIntegrationTest")]
-public abstract class DatabaseTest : IDisposable
+public abstract class DatabaseTest : IAsyncLifetime
 {
     public DatabaseTest(DatabaseFixture fixture)
     {
@@ -61,10 +61,8 @@ public abstract class DatabaseTest : IDisposable
         TablesToIgnore = GalacticWasteManagementMigrator.VersioningTables,
     };
 
-    public void Dispose()
-    {
-        Checkpoint.Reset(Fixture.ConnectionString).GetAwaiter().GetResult();
-    }
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => Checkpoint.Reset(Fixture.ConnectionString);
 }
 ```
 
