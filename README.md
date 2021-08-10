@@ -42,7 +42,7 @@ public class DatabaseCollectionDefinition : ICollectionFixture<DatabaseFixture>
 }
 ```
 
-3. Optional: Create a base class for your tests (optionally using CaptainData and Respawn)
+3. Optional: Create a base class for your tests (optionally using [DataDude](https://github.com/carl-berg/data-dude) and [Respawn](https://github.com/jbogard/Respawn))
 ```csharp
 [Collection("DatabaseIntegrationTest")]
 public abstract class DatabaseTest : IAsyncLifetime
@@ -50,11 +50,11 @@ public abstract class DatabaseTest : IAsyncLifetime
     public DatabaseTest(DatabaseFixture fixture)
     {
         Fixture = fixture;
-        Captain = new Captain();
+        Dude = new Dude().EnableAutomaticForeignKeys();
     }
 
     public DatabaseFixture Fixture { get; }
-    public Captain Captain { get; }
+    public Dude Dude { get; }
 
     public static Checkpoint Checkpoint { get; } = new Checkpoint
     {

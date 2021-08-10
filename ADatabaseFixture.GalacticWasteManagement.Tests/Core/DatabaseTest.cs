@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
-using CaptainData;
-using CaptainData.Rules.PreDefined.Identity;
+using DataDude;
 using Respawn;
 using Xunit;
 
@@ -12,12 +11,11 @@ namespace ADatabaseFixture.GalacticWasteManagement.Tests.Core
         public DatabaseTest(DatabaseFixture fixture)
         {
             Fixture = fixture;
-            Captain = new Captain();
-            Captain.AddRule(new SmartForeignKeyRule(new ForeignKeyNamingConvention()));
+            Dude = new Dude().EnableAutomaticForeignKeys();
         }
 
         public DatabaseFixture Fixture { get; }
-        public Captain Captain { get; }
+        public Dude Dude { get; }
 
         public static Checkpoint Checkpoint { get; } = new Checkpoint
         {
@@ -27,10 +25,5 @@ namespace ADatabaseFixture.GalacticWasteManagement.Tests.Core
         public Task InitializeAsync() => Task.CompletedTask;
 
         public Task DisposeAsync() => Checkpoint.Reset(Fixture.ConnectionString);
-
-        private class ForeignKeyNamingConvention : ColumnSuffixMatchStrategy
-        {
-            public ForeignKeyNamingConvention() => EndsWith = "Id";
-        }
     }
 }

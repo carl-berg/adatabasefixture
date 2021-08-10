@@ -1,5 +1,6 @@
 ﻿using ADatabaseFixture.FluentMigrator.Tests.Core;
 using Dapper;
+using DataDude;
 using Shouldly;
 using System.Threading.Tasks;
 using Xunit;
@@ -17,7 +18,7 @@ namespace ADatabaseFixture.FluentMigrator.Tests
         {
             var connection = Fixture.CreateNewConnection();
 
-            await Captain
+            await Dude
                 .Insert("Department", new { Name = "IT" })
                 .Insert("Person", new { Name = "John Doe" })
                 .Insert("Employee")
