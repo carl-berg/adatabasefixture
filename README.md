@@ -78,7 +78,7 @@ public class Mytest : DatabaseTest
         // Arrange
         var connection = Fixture.CreateNewConnection();
 
-        await Captain
+        await Dude
             .Insert("Department", new { Id = 1, Name = "HR" })
             .Insert("Department", new { Id = 2, Name = "IT" })
             .Insert("Employee", new { Id = 1, Name = "Jane Doe", DepartmentId = 1 })
