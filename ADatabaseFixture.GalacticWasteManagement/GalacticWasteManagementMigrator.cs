@@ -1,5 +1,6 @@
 ﻿using GalacticWasteManagement;
 using System;
+using System.Threading.Tasks;
 
 namespace ADatabaseFixture.GalacticWasteManagement
 {
@@ -18,14 +19,14 @@ namespace ADatabaseFixture.GalacticWasteManagement
             _configureManager = configureManager;
         }
 
-        public void MigrateUp(string connectionString)
+        public async ValueTask MigrateUp(string connectionString)
         {
             var migrator = _createManager(connectionString);
             var output = new DebugLogger();
             migrator.Logger = output;
             migrator.Output = output;
             _configureManager?.Invoke(migrator);
-            migrator.Update(_migrationMode).GetAwaiter().GetResult();
+            await migrator.Update(_migrationMode);
         }
 
         public static IMigrator Create(

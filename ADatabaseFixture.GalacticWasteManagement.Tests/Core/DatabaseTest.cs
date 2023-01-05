@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DataDude;
 using Respawn;
 using Xunit;
@@ -17,13 +18,16 @@ namespace ADatabaseFixture.GalacticWasteManagement.Tests.Core
         public DatabaseFixture Fixture { get; }
         public Dude Dude { get; }
 
-        public static Checkpoint Checkpoint { get; } = new Checkpoint
+        private static Respawner Respawner { get; set; }
+
+        public async Task InitializeAsync()
         {
-            TablesToIgnore = GalacticWasteManagementMigrator.VersioningTables,
-        };
+            Respawner ??= await Respawner.CreateAsync(Fixture.ConnectionString, new RespawnerOptions
+            {
+                TablesToIgnore = GalacticWasteManagementMigrator.VersioningTables.Select(t => new Respawn.Graph.Table(t)).ToArray(),
+            });
+        }
 
-        public Task InitializeAsync() => Task.CompletedTask;
-
-        public Task DisposeAsync() => Checkpoint.Reset(Fixture.ConnectionString);
+        public Task DisposeAsync() => Respawner.ResetAsync(Fixture.ConnectionString);
     }
 }

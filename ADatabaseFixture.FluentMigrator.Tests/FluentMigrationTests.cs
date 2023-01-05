@@ -24,7 +24,7 @@ namespace ADatabaseFixture.FluentMigrator.Tests
                 .Insert("Employee")
                 .Go(connection);
 
-            var employee = await connection.QuerySingleAsync<Employee>(@"
+            var employees = await connection.QueryAsync<Employee>(@"
                 SELECT
                     Employee.Id,
                     Person.Name,
@@ -33,8 +33,26 @@ namespace ADatabaseFixture.FluentMigrator.Tests
                 INNER JOIN Person ON Person.Id = PersonId
                 INNER JOIN Department ON Department.Id = DepartmentId");
 
-            employee.Name.ShouldBe("John Doe");
-            employee.Department.ShouldBe("IT");
+            employees.ShouldHaveSingleItem().ShouldSatisfyAllConditions(
+                employee => employee.Name.ShouldBe("John Doe"),
+                employee => employee.Department.ShouldBe("IT"));
+        }
+
+        [Fact]
+        public async Task EnsureDatabaseIsEmptyForNewTests()
+        {
+            var connection = Fixture.CreateNewConnection();
+
+            var employees = await connection.QueryAsync<Employee>(@"
+                SELECT
+                    Employee.Id,
+                    Person.Name,
+                    Department.Name as Department
+                FROM Employee
+                INNER JOIN Person ON Person.Id = PersonId
+                INNER JOIN Department ON Department.Id = DepartmentId");
+
+            employees.ShouldBeEmpty();
         }
 
         private class Employee

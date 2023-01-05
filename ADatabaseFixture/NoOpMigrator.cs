@@ -1,9 +1,12 @@
-﻿namespace ADatabaseFixture
+﻿using System;
+using System.Threading.Tasks;
+
+namespace ADatabaseFixture
 {
     public class NoOpMigrator : IMigrator
     {
-        public string[] VersioningTables => new string[0];
+        public string[] VersioningTables => Array.Empty<string>();
 
-        public void MigrateUp(string connectionString) { }
+        public ValueTask MigrateUp(string connectionString) => ValueTask.CompletedTask;
     }
 }

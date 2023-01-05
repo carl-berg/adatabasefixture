@@ -7,7 +7,7 @@ Contains the following packages:
 Contains the abstract class DatabaseFixtureBase which needs an `IDatabaseAdapter` and an optional `IMigrator` to be created.
 
 **ADatabaseFixture.SqlServer**
-Contains `SqlServerDatabaseAdapter : IDatabaseAdapter` for usage against an SqlServer database
+Contains `SqlServerDatabaseAdapter : IDatabaseAdapter` for usage with an SqlServer database
 
 **ADatabaseFixture.GalacticWasteManagement**
 Contains `GalacticWasteManagementMigrator : IMigrator` which implements the migrator using the [Galactic-Waste-Management](https://github.com/mattiasnordqvist/Galactic-Waste-Management) migration library
@@ -20,11 +20,10 @@ In this example we will use the GalacticWasteManagement migrator as an example, 
 
 1. Create your fixture class
 ```csharp
-public class DatabaseFixture : DatabaseFixtureBase
+public class DatabaseFixture : DatabaseFixtureBase, IAsyncLifetime
 {
-    public DatabaseFixture() : base(
-            new SqlServerDatabaseAdapter(), 
-            GalacticWasteManagementMigrator.Create<AssemblyTypeContainingMigration>())
+    public DatabaseFixture()
+        : base(new SqlServerDatabaseAdapter(), GalacticWasteManagementMigrator.Create<DatabaseFixture>())
     {
     }
 }
@@ -56,17 +55,21 @@ public abstract class DatabaseTest : IAsyncLifetime
     public DatabaseFixture Fixture { get; }
     public Dude Dude { get; }
 
-    public static Checkpoint Checkpoint { get; } = new Checkpoint
-    {
-        TablesToIgnore = GalacticWasteManagementMigrator.VersioningTables,
-    };
+    private static Respawner Respawner { get; set; }
 
-    public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => Checkpoint.Reset(Fixture.ConnectionString);
+    public async Task InitializeAsync()
+    {
+        Respawner ??= await Respawner.CreateAsync(Fixture.ConnectionString, new RespawnerOptions
+        {
+            TablesToIgnore = GalacticWasteManagementMigrator.VersioningTables.Select(t => new Respawn.Graph.Table(t)).ToArray(),
+        });
+    }
+
+    public Task DisposeAsync() => Respawner.ResetAsync(Fixture.ConnectionString);
 }
 ```
 
-4. Go ahead and write your first integration test
+4. Go ahead and write your first integration test (using [Dapper](https://github.com/DapperLib/Dapper) for example)
 ```csharp
 public class Mytest : DatabaseTest
 {
@@ -76,7 +79,7 @@ public class Mytest : DatabaseTest
     public async Task TestChangeDepartment()
     {
         // Arrange
-        var connection = Fixture.CreateNewConnection();
+        using var connection = Fixture.CreateNewConnection();
 
         await Dude
             .Insert("Department", new { Id = 1, Name = "HR" })

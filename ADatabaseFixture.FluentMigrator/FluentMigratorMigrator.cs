@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ADatabaseFixture.FluentMigrator
 {
@@ -18,9 +19,9 @@ namespace ADatabaseFixture.FluentMigrator
             _assembliesContainingMigrations = assembliesContainingMigrations;
         }
 
-        public void MigrateUp(string connectionString)
+        public ValueTask MigrateUp(string connectionString)
         {
-            var serviceProvider = new ServiceCollection()
+            using var serviceProvider = new ServiceCollection()
                 .AddFluentMigratorCore()
                 .ConfigureRunner(rb => 
                 {
@@ -30,10 +31,9 @@ namespace ADatabaseFixture.FluentMigrator
                 })
                 .BuildServiceProvider(false);
 
-            using(var scope = serviceProvider.CreateScope())
-            {
-                scope.ServiceProvider.GetService<IMigrationRunner>().MigrateUp();
-            }
+            using var scope = serviceProvider.CreateScope();
+            scope.ServiceProvider.GetService<IMigrationRunner>().MigrateUp();
+            return ValueTask.CompletedTask;
 
         }
 
