@@ -7,6 +7,6 @@ namespace ADatabaseFixture
     {
         public string[] VersioningTables => Array.Empty<string>();
 
-        public ValueTask MigrateUp(string connectionString) => ValueTask.CompletedTask;
+        public Task MigrateUp(string connectionString) => Task.CompletedTask;
     }
 }

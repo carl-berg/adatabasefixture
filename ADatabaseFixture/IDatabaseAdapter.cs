@@ -9,12 +9,12 @@ namespace ADatabaseFixture
         /// Creates a new testabase
         /// </summary>
         /// <returns>Connection string to the new database</returns>
-        ValueTask<string> CreateDatabase();
+        Task<string> CreateDatabase();
 
         /// <summary>
         /// Attempt to remove the database
         /// </summary>
-        ValueTask TryRemoveDatabase();
+        Task TryRemoveDatabase();
 
         /// <summary>
         /// Creates a new database connection

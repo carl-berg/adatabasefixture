@@ -19,7 +19,7 @@ namespace ADatabaseFixture.GalacticWasteManagement
             _configureManager = configureManager;
         }
 
-        public async ValueTask MigrateUp(string connectionString)
+        public async Task MigrateUp(string connectionString)
         {
             var migrator = _createManager(connectionString);
             var output = new DebugLogger();

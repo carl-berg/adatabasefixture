@@ -19,7 +19,7 @@ namespace ADatabaseFixture.FluentMigrator
             _assembliesContainingMigrations = assembliesContainingMigrations;
         }
 
-        public ValueTask MigrateUp(string connectionString)
+        public Task MigrateUp(string connectionString)
         {
             using var serviceProvider = new ServiceCollection()
                 .AddFluentMigratorCore()
@@ -33,7 +33,7 @@ namespace ADatabaseFixture.FluentMigrator
 
             using var scope = serviceProvider.CreateScope();
             scope.ServiceProvider.GetService<IMigrationRunner>().MigrateUp();
-            return ValueTask.CompletedTask;
+            return Task.CompletedTask;
 
         }
 

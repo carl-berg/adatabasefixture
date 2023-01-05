@@ -4,6 +4,6 @@ namespace ADatabaseFixture
 {
     public interface IMigrator
     {
-        ValueTask MigrateUp(string connectionString);
+        Task MigrateUp(string connectionString);
     }
 }

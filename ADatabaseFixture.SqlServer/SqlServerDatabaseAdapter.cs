@@ -31,7 +31,7 @@ namespace ADatabaseFixture
         /// <summary>
         /// Create a new database using specified database name
         /// </summary>
-        public virtual async ValueTask<string> CreateDatabase()
+        public virtual async Task<string> CreateDatabase()
         {
             var filePath = GetDatabasePath();
             string connectionString = GetMasterConnectionString();
@@ -48,7 +48,7 @@ namespace ADatabaseFixture
         /// <summary>
         /// Kills open connections, Drops database and tries to remove the file
         /// </summary>
-        public virtual async ValueTask TryRemoveDatabase()
+        public virtual async Task TryRemoveDatabase()
         {
             string connectionString = GetMasterConnectionString();
             await using var connection = new SqlConnection(connectionString);
@@ -61,7 +61,7 @@ namespace ADatabaseFixture
         /// <summary>
         /// Attempts to drop database if it exists
         /// </summary>
-        protected virtual async Task DropDatabase(SqlConnection connection)
+        protected virtual async ValueTask DropDatabase(SqlConnection connection)
         {
             await using var cmd = connection.CreateCommand();
             cmd.CommandText = $"DROP DATABASE IF EXISTS [{_databaseName}]";
