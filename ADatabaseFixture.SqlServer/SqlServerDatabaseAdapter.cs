@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.IO;
-using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace ADatabaseFixture
 {
@@ -31,76 +31,78 @@ namespace ADatabaseFixture
         /// <summary>
         /// Create a new database using specified database name
         /// </summary>
-        public virtual string CreateDatabase()
+        public virtual async Task<string> CreateDatabase()
         {
             var filePath = GetDatabasePath();
-
             string connectionString = GetMasterConnectionString();
-            using (var connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                SqlCommand cmd = connection.CreateCommand();
-
-                cmd.CommandText = $"CREATE DATABASE [{_databaseName}] ON (NAME = N'{_databaseName}', FILENAME = '{filePath}')";
-                cmd.ExecuteNonQuery();
-
-                return GetDatabaseConnectionString();
-            }
+#if NETSTANDARD2_1_OR_GREATER
+            await using var connection = new SqlConnection(connectionString);
+# else
+            using var connection = new SqlConnection(connectionString);
+#endif
+            await connection.OpenAsync();
+#if NETSTANDARD2_1_OR_GREATER
+            await using var cmd = connection.CreateCommand();
+#else
+            using var cmd = connection.CreateCommand();
+#endif
+            cmd.CommandText = $"CREATE DATABASE [{_databaseName}] ON (NAME = N'{_databaseName}', FILENAME = '{filePath}')";
+            await cmd.ExecuteNonQueryAsync();
+            return GetDatabaseConnectionString();
         }
 
-        public IDbConnection CreateNewConnection(string connectionString)
-        {
-            return new SqlConnection(connectionString);
-        }
+        public virtual IDbConnection CreateNewConnection(string connectionString) => new SqlConnection(connectionString);
 
         /// <summary>
         /// Kills open connections, Drops database and tries to remove the file
         /// </summary>
-        public virtual void TryRemoveDatabase()
+        public virtual async Task TryRemoveDatabase()
         {
-            KillOpenConnections();
-            DropDatabase();
+            string connectionString = GetMasterConnectionString();
+#if NETSTANDARD2_1_OR_GREATER
+            await using var connection = new SqlConnection(connectionString);
+#else
+            using var connection = new SqlConnection(connectionString);
+#endif
+            await connection.OpenAsync();
+            await KillOpenConnections(connection);
+            await DropDatabase(connection);
             TryRemoveDatabaseFile();
         }
 
         /// <summary>
         /// Attempts to drop database if it exists
         /// </summary>
-        public virtual void DropDatabase()
+        protected virtual async Task DropDatabase(SqlConnection connection)
         {
-            string connectionString = GetMasterConnectionString();
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                SqlCommand cmd = connection.CreateCommand();
-
-                cmd.CommandText = string.Format($"DROP DATABASE IF EXISTS [{_databaseName}]");
-                cmd.ExecuteNonQuery();
-            }
+#if NETSTANDARD2_1_OR_GREATER
+            await using var cmd = connection.CreateCommand();
+#else
+            using var cmd = connection.CreateCommand();
+#endif
+            cmd.CommandText = $"DROP DATABASE IF EXISTS [{_databaseName}]";
+            await cmd.ExecuteNonQueryAsync();
         }
 
         /// <summary>
         /// Attempts to kill any open connections
         /// </summary>
-        public virtual void KillOpenConnections()
+        public virtual async Task KillOpenConnections(SqlConnection connection)
         {
-            string connectionString = GetMasterConnectionString();
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                SqlCommand cmd = connection.CreateCommand();
-
-                cmd.CommandText = $@"
-                    DECLARE @kill varchar(8000) = '';  
-                    SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), session_id) + ';'  
-                    FROM sys.dm_exec_sessions
-                    WHERE database_id  = db_id('{_databaseName}')
-
-                    EXEC(@kill);";
-                cmd.ExecuteNonQuery();
-            }
+#if NETSTANDARD2_1_OR_GREATER
+            await using var cmd = connection.CreateCommand();
+#else
+            using var cmd = connection.CreateCommand();
+#endif
+            cmd.CommandText = 
+                $"""
+                DECLARE @kill varchar(8000) = '';  
+                SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), session_id) + ';'  
+                FROM sys.dm_exec_sessions
+                WHERE database_id  = db_id('{_databaseName}')
+                EXEC(@kill);
+                """;
+            await cmd.ExecuteNonQueryAsync();
         }
 
         /// <summary>
@@ -120,19 +122,18 @@ namespace ADatabaseFixture
         /// </summary>
         public virtual string GetDatabasePath()
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            var path = Path.GetDirectoryName(assembly.Location);
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var path = Path.Combine(appDataPath, "ADatabaseFixture");
+            if (Directory.Exists(path) is false)
+            {
+                Directory.CreateDirectory(path);
+            }
+
             return Path.Combine(path, $"{_databaseName}.mdf");
         }
 
-        public virtual string GetMasterConnectionString()
-        {
-            return $@"Data Source={_dataSource};Initial Catalog=master;{_auth}";
-        }
+        public virtual string GetMasterConnectionString() => $@"Data Source={_dataSource};Initial Catalog=master;{_auth}";
 
-        public virtual string GetDatabaseConnectionString()
-        {
-            return $@"Data Source={_dataSource};Initial Catalog={_databaseName};{_auth}";
-        }
+        public virtual string GetDatabaseConnectionString() => $@"Data Source={_dataSource};Initial Catalog={_databaseName};{_auth}";
     }
 }

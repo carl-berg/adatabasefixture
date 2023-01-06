@@ -1,7 +1,9 @@
-﻿namespace ADatabaseFixture
+﻿using System.Threading.Tasks;
+
+namespace ADatabaseFixture
 {
     public interface IMigrator
     {
-        void MigrateUp(string connectionString);
+        Task MigrateUp(string connectionString);
     }
 }
