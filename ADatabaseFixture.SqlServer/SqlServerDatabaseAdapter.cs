@@ -35,9 +35,17 @@ namespace ADatabaseFixture
         {
             var filePath = GetDatabasePath();
             string connectionString = GetMasterConnectionString();
+#if NETSTANDARD2_1_OR_GREATER
             await using var connection = new SqlConnection(connectionString);
+# else
+            using var connection = new SqlConnection(connectionString);
+#endif
             await connection.OpenAsync();
+#if NETSTANDARD2_1_OR_GREATER
             await using var cmd = connection.CreateCommand();
+#else
+            using var cmd = connection.CreateCommand();
+#endif
             cmd.CommandText = $"CREATE DATABASE [{_databaseName}] ON (NAME = N'{_databaseName}', FILENAME = '{filePath}')";
             await cmd.ExecuteNonQueryAsync();
             return GetDatabaseConnectionString();
@@ -51,7 +59,11 @@ namespace ADatabaseFixture
         public virtual async Task TryRemoveDatabase()
         {
             string connectionString = GetMasterConnectionString();
+#if NETSTANDARD2_1_OR_GREATER
             await using var connection = new SqlConnection(connectionString);
+#else
+            using var connection = new SqlConnection(connectionString);
+#endif
             await connection.OpenAsync();
             await KillOpenConnections(connection);
             await DropDatabase(connection);
@@ -61,9 +73,13 @@ namespace ADatabaseFixture
         /// <summary>
         /// Attempts to drop database if it exists
         /// </summary>
-        protected virtual async ValueTask DropDatabase(SqlConnection connection)
+        protected virtual async Task DropDatabase(SqlConnection connection)
         {
+#if NETSTANDARD2_1_OR_GREATER
             await using var cmd = connection.CreateCommand();
+#else
+            using var cmd = connection.CreateCommand();
+#endif
             cmd.CommandText = $"DROP DATABASE IF EXISTS [{_databaseName}]";
             await cmd.ExecuteNonQueryAsync();
         }
@@ -71,9 +87,13 @@ namespace ADatabaseFixture
         /// <summary>
         /// Attempts to kill any open connections
         /// </summary>
-        public virtual async ValueTask KillOpenConnections(SqlConnection connection)
+        public virtual async Task KillOpenConnections(SqlConnection connection)
         {
+#if NETSTANDARD2_1_OR_GREATER
             await using var cmd = connection.CreateCommand();
+#else
+            using var cmd = connection.CreateCommand();
+#endif
             cmd.CommandText = 
                 $"""
                 DECLARE @kill varchar(8000) = '';  

@@ -19,7 +19,7 @@ namespace ADatabaseFixture
             _databaseAdapter = databaseAdapter;
         }
 
-        public virtual string ConnectionString  => _connectionString ?? throw new Exception("Database fixture has not been initialized");
+        public virtual string ConnectionString  => _connectionString ?? throw new Exception($"Database fixture has not been initialized. Ensure {nameof(InitializeAsync)} have been called before creating a connection");
 
         protected virtual IMigrator Migrator { get; }
 
@@ -51,6 +51,6 @@ namespace ADatabaseFixture
         /// Disposes the database and removes resources
         /// </summary>
         /// <returns></returns>
-        public async Task DisposeAsync() => await _databaseAdapter.TryRemoveDatabase();
+        public Task DisposeAsync() => _databaseAdapter.TryRemoveDatabase();
     }
 }
