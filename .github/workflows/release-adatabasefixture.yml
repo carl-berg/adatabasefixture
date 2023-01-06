@@ -21,6 +21,10 @@ jobs:
 
     - name: Install dependencies
       run: dotnet restore
+
+    - name: Start localdb
+      shell: pwsh
+      run: sqllocaldb start mssqllocaldb
     
     - name: Test
       run: dotnet test --configuration Release --no-restore --verbosity normal
