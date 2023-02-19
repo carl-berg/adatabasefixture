@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using DataDude;
+using Microsoft.Data.SqlClient;
 using Respawn;
 using Xunit;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace ADatabaseFixture
@@ -26,7 +27,7 @@ namespace ADatabaseFixture
         /// <summary>
         /// Creates a new open connection
         /// </summary>
-        public virtual IDbConnection CreateNewConnection()
+        public virtual DbConnection CreateNewConnection()
         {
             var connection = _databaseAdapter.CreateNewConnection(ConnectionString);
             if (connection.State != ConnectionState.Open)
