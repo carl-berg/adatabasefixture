@@ -21,8 +21,6 @@ namespace ADatabaseFixture.FluentMigrator.Tests.Core
 
         private static Respawner Respawner { get; set; }
 
-        protected SqlConnection CreateNewConnection() => new(Fixture.ConnectionString);
-
         public async Task InitializeAsync()
         {
             Respawner ??= await Respawner.CreateAsync(Fixture.ConnectionString, new RespawnerOptions
