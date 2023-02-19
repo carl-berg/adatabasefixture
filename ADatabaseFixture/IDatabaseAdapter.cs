@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace ADatabaseFixture
@@ -21,6 +22,6 @@ namespace ADatabaseFixture
         /// </summary>
         /// <param name="connectionString">Connection string</param>
         /// <returns>New connection</returns>
-        IDbConnection CreateNewConnection(string connectionString);
+        DbConnection CreateNewConnection(string connectionString);
     }
 }

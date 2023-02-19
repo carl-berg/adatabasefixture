@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
@@ -51,7 +51,8 @@ namespace ADatabaseFixture
             return GetDatabaseConnectionString();
         }
 
-        public virtual IDbConnection CreateNewConnection(string connectionString) => new SqlConnection(connectionString);
+        public virtual SqlConnection CreateNewConnection(string connectionString) => new(connectionString);
+        DbConnection IDatabaseAdapter.CreateNewConnection(string connectionString) => CreateNewConnection(connectionString);
 
         /// <summary>
         /// Kills open connections, Drops database and tries to remove the file
@@ -100,6 +101,7 @@ namespace ADatabaseFixture
                 SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), session_id) + ';'  
                 FROM sys.dm_exec_sessions
                 WHERE database_id  = db_id('{_databaseName}')
+                AND is_user_process = 1;
                 EXEC(@kill);
                 """;
             await cmd.ExecuteNonQueryAsync();

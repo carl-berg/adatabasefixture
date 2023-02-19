@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using DataDude;
+using Microsoft.Data.SqlClient;
 using Respawn;
 using Xunit;
 
@@ -19,6 +20,8 @@ namespace ADatabaseFixture.FluentMigrator.Tests.Core
         public Dude Dude { get; }
 
         private static Respawner Respawner { get; set; }
+
+        protected SqlConnection CreateNewConnection() => new(Fixture.ConnectionString);
 
         public async Task InitializeAsync()
         {
