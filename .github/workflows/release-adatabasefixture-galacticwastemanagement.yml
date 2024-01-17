@@ -27,7 +27,7 @@ jobs:
       run: sqllocaldb start mssqllocaldb
     
     - name: Test
-      run: dotnet test --configuration Release --no-restore --verbosity normal
+      run: dotnet test ADatabaseFixture.GalacticWasteManagement.Tests --configuration Release --no-restore --verbosity normal
 
   deploy:
     name: Deploy

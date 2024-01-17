@@ -27,7 +27,7 @@ jobs:
       run: sqllocaldb start mssqllocaldb
     
     - name: Test
-      run: dotnet test --configuration Release --no-restore --verbosity normal
+      run: dotnet test ADatabaseFixture.FluentMigrator.Tests --configuration Release --no-restore --verbosity normal
 
   deploy:
     name: Deploy
