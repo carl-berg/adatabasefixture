@@ -36,9 +36,9 @@ namespace ADatabaseFixture
             var filePath = GetDatabasePath();
             string connectionString = GetMasterConnectionString();
 #if NETSTANDARD2_1_OR_GREATER
-            await using var connection = new SqlConnection(connectionString);
+            await using var connection = CreateNewConnection(connectionString);
 # else
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateNewConnection(connectionString);
 #endif
             await connection.OpenAsync();
 #if NETSTANDARD2_1_OR_GREATER
@@ -61,9 +61,9 @@ namespace ADatabaseFixture
         {
             string connectionString = GetMasterConnectionString();
 #if NETSTANDARD2_1_OR_GREATER
-            await using var connection = new SqlConnection(connectionString);
+            await using var connection = CreateNewConnection(connectionString);
 #else
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateNewConnection(connectionString);
 #endif
             await connection.OpenAsync();
             await KillOpenConnections(connection);
