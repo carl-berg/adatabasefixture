@@ -32,7 +32,7 @@ namespace ADatabaseFixture.FluentMigrator
                 .BuildServiceProvider(false);
 
             using var scope = serviceProvider.CreateScope();
-            scope.ServiceProvider.GetService<IMigrationRunner>().MigrateUp();
+            scope.ServiceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
             return Task.CompletedTask;
 
         }
