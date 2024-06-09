@@ -1,16 +1,15 @@
 ﻿using System;
-using ADatabaseFixture.FluentMigrator.Tests.Migrations;
+using ADatabaseFixture.FluentMigrator.Tests.Database.Migrations;
+using Microsoft.Data.SqlClient;
 using Xunit;
 
-namespace ADatabaseFixture.FluentMigrator.Tests.Core
-{
-    public class DatabaseFixture : DatabaseFixtureBase, IAsyncLifetime
-    {
-        public DatabaseFixture()
-            : base(new SqlServerDatabaseAdapter(databaseName: DatabaseName()), FluentMigratorMigrator.Create<CreatePersonTable>(Database.SqlServer2016))
-        {
-        }
+namespace ADatabaseFixture.FluentMigrator.Tests.Core;
 
-        private static string DatabaseName() => $"FluentMigrator_TestDatabase_{DateTime.Now:yyyy-MM-dd_HH-mm}";
-    }
+public class DatabaseFixture() : DatabaseFixtureBase(
+    new SqlServerDatabaseAdapter(ConnectionFactory, DatabaseName()), 
+    FluentMigratorMigrator.Create<CreatePersonTable>(FluentMigrator.Database.SqlServer2016)), IAsyncLifetime
+{
+    private static string DatabaseName() => $"FluentMigrator_TestDatabase_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
+
+    private static SqlConnection ConnectionFactory(string connectionString) => new(connectionString);
 }

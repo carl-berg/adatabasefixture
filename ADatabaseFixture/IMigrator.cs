@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
-namespace ADatabaseFixture
+namespace ADatabaseFixture;
+
+public interface IMigrator
 {
-    public interface IMigrator
-    {
-        Task MigrateUp(string connectionString);
-    }
+    Task MigrateUp(string connectionString, CancellationToken? cancellationToken = null);
 }

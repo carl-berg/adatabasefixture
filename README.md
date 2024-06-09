@@ -10,22 +10,21 @@ Contains the abstract class DatabaseFixtureBase which needs an `IDatabaseAdapter
 Contains `SqlServerDatabaseAdapter : IDatabaseAdapter` for usage with an SqlServer database
 
 **ADatabaseFixture.GalacticWasteManagement**
-Contains `GalacticWasteManagementMigrator : IMigrator` which implements the migrator using the [Galactic-Waste-Management](https://github.com/mattiasnordqvist/Galactic-Waste-Management) migration library
+Contains `GalacticWasteManagementMigrator : IMigrator` which implements the migrator using the [Galactic-Waste-Management](https://github.com/mattiasnordqvist/Galactic-Waste-Management) migration library. Note, this package has, like Galactic-Waste-Management been deprecated. A suitable replacement could be [ADatabaseMigrator](https://github.com/carl-berg/ADatabaseMigrator).
 
 **ADatabaseFixture.FluentMigrator**
 Contains `FluentMigratorMigrator : IMigrator` which implements the migrator using the [FluentMigrator](https://fluentmigrator.github.io/) migration library
 
 ## Example setup using xUnit
-In this example we will use the GalacticWasteManagement migrator as an example, but the setup would be almost identical for FluentMigrator.
+In this example we will use the FluentMigrator migrator as an example (see examples below for integration with other libraries).
 
 1. Create your fixture class
 ```csharp
-public class DatabaseFixture : DatabaseFixtureBase, IAsyncLifetime
+public class DatabaseFixture() : DatabaseFixtureBase(
+    new SqlServerDatabaseAdapter(ConnectionFactory), 
+    FluentMigratorMigrator.Create<CreatePersonTable>(Database.SqlServer2016)), IAsyncLifetime
 {
-    public DatabaseFixture()
-        : base(new SqlServerDatabaseAdapter(), GalacticWasteManagementMigrator.Create<DatabaseFixture>())
-    {
-    }
+    private static SqlConnection ConnectionFactory(string connectionString) => new(connectionString);
 }
 ```
 
@@ -61,7 +60,7 @@ public abstract class DatabaseTest : IAsyncLifetime
     {
         Respawner ??= await Respawner.CreateAsync(Fixture.ConnectionString, new RespawnerOptions
         {
-            TablesToIgnore = GalacticWasteManagementMigrator.VersioningTables.Select(t => new Respawn.Graph.Table(t)).ToArray(),
+            TablesToIgnore = FluentMigratorMigrator.VersioningTables.Select(t => new Respawn.Graph.Table(t)).ToArray(),
         });
     }
 
@@ -104,16 +103,34 @@ public class Mytest : DatabaseTest
 }
 ```
 
-## Example setup using nUnit
-// TODO
+## Using other migration libraries
+ADatabaseFixture could easily be made compatible with other migration libraries like [ADatabaseMigrator](https://github.com/carl-berg/ADatabaseMigrator) or [EfCore Migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations) without the need to add extra packages.
 
-## Release Notes
+Here is an example of how you could create a fixture migrator for **EF Core**
+```c#
+public class FixtureMigrator : ADatabaseFixture.IMigrator
+{
+    public async Task MigrateUp(string connectionString, CancellationToken? cancellationToken)
+    {
+        using var connection = new SqlConnection(connectionString);
+        using var dbContext = MyDbContext(new DbContextOptionsBuilder<MyDbContext>().UseSqlServer(connection).Options);
+        connection.Open();
+        await dbContext.Database.MigrateAsync(cancellationToken ?? default);
+    }
+}
+```
 
-### 0.1.0
-Initial version
+.. and here's an example of how you would create a fixture migrator for **ADatabaseMigrator**
+```c#
+public class FixtureMigrator : ADatabaseFixture.IMigrator
+{
+    public async Task MigrateUp(string connectionString, CancellationToken? cancellationToken)
+    {
+        using var connection = new SqlConnection(connectionString);
+        connection.Open();
 
-### 0.1.1
-Added migrator versioning tables
-
-### 0.1.2
-Made migrator versioning tables static instead to be able to use with Respawn checkpoint (which should be a static instance)
+        // See documentation at https://github.com/carl-berg/ADatabaseMigrator for how to create a migrator class
+        await new ADatabaseMigrator(connection).Migrate(cancellationToken);
+    }
+}
+```

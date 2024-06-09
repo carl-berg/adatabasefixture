@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace ADatabaseFixture.FluentMigrator.Tests.Core;
+namespace ADatabaseFixture.ADatabaseMigrator.Tests.Core;
 
 [CollectionDefinition("DatabaseIntegrationTest")]
 public class DatabaseCollectionDefinition : ICollectionFixture<DatabaseFixture>
