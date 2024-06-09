@@ -12,7 +12,7 @@ public class FluentMigratorMigrator : IMigrator
     private readonly Action<IMigrationRunnerBuilder> _configure;
     private readonly Assembly[] _assembliesContainingMigrations;
 
-    public static string[] VersioningTables => ["VersionInfo"];
+    public const string VersioningTable = "VersionInfo";
 
     internal FluentMigratorMigrator(Action<IMigrationRunnerBuilder> configure, params Assembly[] assembliesContainingMigrations)
     {

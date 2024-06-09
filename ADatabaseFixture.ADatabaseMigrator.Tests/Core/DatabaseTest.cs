@@ -18,7 +18,7 @@ public abstract class DatabaseTest(DatabaseFixture fixture) : IAsyncLifetime
     {
         Respawner ??= await Respawner.CreateAsync(fixture.ConnectionString, new RespawnerOptions
         {
-            TablesToIgnore = [new(MigrationScriptJournalManager.JournalTableName)],
+            TablesToIgnore = [FixtureMigrator.VersioningTable],
         });
     }
 

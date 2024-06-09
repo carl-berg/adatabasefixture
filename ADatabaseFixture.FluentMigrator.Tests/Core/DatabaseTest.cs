@@ -24,7 +24,7 @@ public abstract class DatabaseTest : IAsyncLifetime
     {
         Respawner ??= await Respawner.CreateAsync(Fixture.ConnectionString, new RespawnerOptions
         {
-            TablesToIgnore = FluentMigratorMigrator.VersioningTables.Select(t => new Respawn.Graph.Table(t)).ToArray(),
+            TablesToIgnore = [FluentMigratorMigrator.VersioningTable],
         });
     }
 

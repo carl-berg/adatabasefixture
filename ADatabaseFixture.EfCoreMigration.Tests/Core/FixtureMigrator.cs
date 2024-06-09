@@ -7,6 +7,8 @@ namespace ADatabaseFixture.EfCoreMigration.Tests.Core;
 
 public class FixtureMigrator : IMigrator
 {
+    public const string VersioningTable = "__EFMigrationsHistory";
+
     public async Task MigrateUp(string connectionString, CancellationToken? cancellationToken)
     {
         using var connection = new SqlConnection(connectionString);
