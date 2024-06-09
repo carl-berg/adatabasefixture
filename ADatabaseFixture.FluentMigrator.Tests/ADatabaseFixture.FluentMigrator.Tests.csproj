@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ADatabaseFixture.FluentMigrator\ADatabaseFixture.FluentMigrator.csproj" />
-    <ProjectReference Include="..\ADatabaseFixture.SqlServer\ADatabaseFixture.SqlServer.csproj" />
     <ProjectReference Include="..\ADatabaseFixture\ADatabaseFixture.csproj" />
   </ItemGroup>
 

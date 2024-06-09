@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ADatabaseFixture.SqlServer\ADatabaseFixture.SqlServer.csproj" />
     <ProjectReference Include="..\ADatabaseFixture\ADatabaseFixture.csproj" />
   </ItemGroup>
 

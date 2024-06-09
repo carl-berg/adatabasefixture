@@ -5,12 +5,9 @@ Contains the following packages:
 
 **ADatabaseFixture**
 Contains the abstract class DatabaseFixtureBase which needs an `IDatabaseAdapter` and an optional `IMigrator` to be created.
-
-**ADatabaseFixture.SqlServer**
-Contains `SqlServerDatabaseAdapter : IDatabaseAdapter` for usage with an SqlServer database
-
-**ADatabaseFixture.GalacticWasteManagement**
-Contains `GalacticWasteManagementMigrator : IMigrator` which implements the migrator using the [Galactic-Waste-Management](https://github.com/mattiasnordqvist/Galactic-Waste-Management) migration library. Note, this package has, like Galactic-Waste-Management been deprecated. A suitable replacement could be [ADatabaseMigrator](https://github.com/carl-berg/ADatabaseMigrator).
+This package also contains to implementations of these interfaces: 
+- `SqlServerDatabaseAdapter` (can be used when targeting SqlServer databases)
+- `NoOpMigrator` (default migrator which simply does nothing)
 
 **ADatabaseFixture.FluentMigrator**
 Contains `FluentMigratorMigrator : IMigrator` which implements the migrator using the [FluentMigrator](https://fluentmigrator.github.io/) migration library
