@@ -1,12 +1,11 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace ADatabaseFixture
-{
-    public class NoOpMigrator : IMigrator
-    {
-        public string[] VersioningTables => Array.Empty<string>();
+namespace ADatabaseFixture;
 
-        public Task MigrateUp(string connectionString) => Task.CompletedTask;
-    }
+public class NoOpMigrator : IMigrator
+{
+    public static string[] VersioningTables => [];
+
+    public Task MigrateUp(string connectionString, CancellationToken? cancellationToken = null) => Task.CompletedTask;
 }
