@@ -1,28 +1,18 @@
 ﻿# ADatabaseFixture
 An abstraction to help write integration tests. The idea is to have a `DatabaseFixture` that gets constructed once, used for all tests and disposed when the tests are done. How this is orchestrated varies slightly depending on which test framework you use. The fixture is responsible for creating an empty database and running migrations to get the database into a "testable" state and also disposing of the database when the tests are done.
 
-Contains the following packages:
+The package contains the abstract class `DatabaseFixtureBase` which requires an `IDatabaseAdapter` and an optional `IMigrator` to be created.
+This package also contains a default implementation of `IDatabaseAdapter` to for use with SqlServer databases: `SqlServerDatabaseAdapter`.
 
-**ADatabaseFixture**
-Contains the abstract class DatabaseFixtureBase which needs an `IDatabaseAdapter` and an optional `IMigrator` to be created.
-
-**ADatabaseFixture.SqlServer**
-Contains `SqlServerDatabaseAdapter : IDatabaseAdapter` for usage with an SqlServer database
-
-**ADatabaseFixture.GalacticWasteManagement**
-Contains `GalacticWasteManagementMigrator : IMigrator` which implements the migrator using the [Galactic-Waste-Management](https://github.com/mattiasnordqvist/Galactic-Waste-Management) migration library. Note, this package has, like Galactic-Waste-Management been deprecated. A suitable replacement could be [ADatabaseMigrator](https://github.com/carl-berg/ADatabaseMigrator).
-
-**ADatabaseFixture.FluentMigrator**
-Contains `FluentMigratorMigrator : IMigrator` which implements the migrator using the [FluentMigrator](https://fluentmigrator.github.io/) migration library
 
 ## Example setup using xUnit
-In this example we will use the FluentMigrator migrator as an example (see examples below for integration with other libraries).
+In this example we will assume you have created a migrator class (`FixtureMigrator`). See instructions below on how to implement a migrator class using ADatabaseMigrator, EF Core or FluentMigrations.
 
 1. Create your fixture class
-```csharp
+```c#
 public class DatabaseFixture() : DatabaseFixtureBase(
     new SqlServerDatabaseAdapter(ConnectionFactory), 
-    FluentMigratorMigrator.Create<CreatePersonTable>(Database.SqlServer2016)), IAsyncLifetime
+    new FixtureMigrator()), IAsyncLifetime
 {
     private static SqlConnection ConnectionFactory(string connectionString) => new(connectionString);
 }
@@ -30,7 +20,7 @@ public class DatabaseFixture() : DatabaseFixtureBase(
 
 2. Create a collection definition using your fixture (xUnit specific). The purpose for this is to only have your fixture created once and reused for all your integration tests
 
-```csharp
+```c#
 [CollectionDefinition("DatabaseIntegrationTest")]
 public class DatabaseCollectionDefinition : ICollectionFixture<DatabaseFixture>
 {
@@ -41,7 +31,7 @@ public class DatabaseCollectionDefinition : ICollectionFixture<DatabaseFixture>
 ```
 
 3. Optional: Create a base class for your tests (optionally using [DataDude](https://github.com/carl-berg/data-dude) and [Respawn](https://github.com/jbogard/Respawn))
-```csharp
+```c#
 [Collection("DatabaseIntegrationTest")]
 public abstract class DatabaseTest : IAsyncLifetime
 {
@@ -60,7 +50,9 @@ public abstract class DatabaseTest : IAsyncLifetime
     {
         Respawner ??= await Respawner.CreateAsync(Fixture.ConnectionString, new RespawnerOptions
         {
-            TablesToIgnore = FluentMigratorMigrator.VersioningTables.Select(t => new Respawn.Graph.Table(t)).ToArray(),
+            // Note that different migration libraries use different tables to store migration history, 
+            // we want to exclude this table from Respawns reset
+            TablesToIgnore = [new(FixtureMigrator.VersioningTable)],
         });
     }
 
@@ -69,7 +61,7 @@ public abstract class DatabaseTest : IAsyncLifetime
 ```
 
 4. Go ahead and write your first integration test (using [Dapper](https://github.com/DapperLib/Dapper) for example)
-```csharp
+```c#
 public class Mytest : DatabaseTest
 {
     public Mytest(DatabaseFixture fixture) : base(fixture) { }
@@ -103,13 +95,34 @@ public class Mytest : DatabaseTest
 }
 ```
 
-## Using other migration libraries
-ADatabaseFixture could easily be made compatible with other migration libraries like [ADatabaseMigrator](https://github.com/carl-berg/ADatabaseMigrator) or [EfCore Migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations) without the need to add extra packages.
+## Using schema migration libraries
+ADatabaseFixture makes it easy for you to plug in your own schema migration logic. Here are some examples of how to interface with a few migration libraries. All you need is to create a class that implements the interface `IMigrator`.
 
-Here is an example of how you could create a fixture migrator for **EF Core**
+### Example using [ADatabaseMigrator](https://github.com/carl-berg/ADatabaseMigrator)
+This requires referencing the package [ADatabaseMigrator](https://www.nuget.org/packages/ADatabaseMigrator)
 ```c#
 public class FixtureMigrator : ADatabaseFixture.IMigrator
 {
+    public const string VersioningTable = "SchemaVersionJournal";
+
+    public async Task MigrateUp(string connectionString, CancellationToken? cancellationToken)
+    {
+        using var connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        // See documentation at https://github.com/carl-berg/ADatabaseMigrator for how to create a ADatabaseMigrator migrator class
+        await new MyDatabaseMigrator(connection).Migrate(cancellationToken);
+    }
+}
+```
+
+### Example using [EfCore Migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations)
+This requires referencing the package [Microsoft.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer)
+```c#
+public class FixtureMigrator : ADatabaseFixture.IMigrator
+{
+    public const string VersioningTable = "__EFMigrationsHistory";
+
     public async Task MigrateUp(string connectionString, CancellationToken? cancellationToken)
     {
         using var connection = new SqlConnection(connectionString);
@@ -120,17 +133,30 @@ public class FixtureMigrator : ADatabaseFixture.IMigrator
 }
 ```
 
-.. and here's an example of how you would create a fixture migrator for **ADatabaseMigrator**
+### Example using [FluentMigrator](https://fluentmigrator.github.io)
+This requires referencing the package [FluentMigrator.Runner](https://www.nuget.org/packages/FluentMigrator.Runner)
 ```c#
 public class FixtureMigrator : ADatabaseFixture.IMigrator
 {
-    public async Task MigrateUp(string connectionString, CancellationToken? cancellationToken)
-    {
-        using var connection = new SqlConnection(connectionString);
-        connection.Open();
+    public const string VersioningTable = "VersionInfo";
 
-        // See documentation at https://github.com/carl-berg/ADatabaseMigrator for how to create a migrator class
-        await new ADatabaseMigrator(connection).Migrate(cancellationToken);
+    public Task MigrateUp(string connectionString, CancellationToken? cancellationToken)
+    {
+        using var serviceProvider = new ServiceCollection()
+            .AddFluentMigratorCore()
+            .ConfigureRunner(rb =>
+            {
+                rb.ScanIn(typeof(FixtureMigrator).Assembly).For.Migrations();
+                rb.WithGlobalConnectionString(connectionString);
+                rb.AddSqlServer2016();
+            })
+            .BuildServiceProvider(false);
+
+        using var scope = serviceProvider.CreateScope();
+        var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+        runner.MigrateUp();
+        
+        return Task.CompletedTask;
     }
 }
 ```

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DataDude;
 using Respawn;
 using Xunit;
@@ -24,7 +23,7 @@ public abstract class DatabaseTest : IAsyncLifetime
     {
         Respawner ??= await Respawner.CreateAsync(Fixture.ConnectionString, new RespawnerOptions
         {
-            TablesToIgnore = [FluentMigratorMigrator.VersioningTable],
+            TablesToIgnore = [FixtureMigrator.VersioningTable],
         });
     }
 
