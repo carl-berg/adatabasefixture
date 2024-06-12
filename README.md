@@ -50,7 +50,9 @@ public abstract class DatabaseTest : IAsyncLifetime
     {
         Respawner ??= await Respawner.CreateAsync(Fixture.ConnectionString, new RespawnerOptions
         {
-            TablesToIgnore = FluentMigratorMigrator.VersioningTables.Select(t => new Respawn.Graph.Table(t)).ToArray(),
+            // Note that different migration libraries use different tables to store migration history, 
+            // we want to exclude this table from Respawns reset
+            TablesToIgnore = [new(FixtureMigrator.VersioningTable)],
         });
     }
 
@@ -101,6 +103,8 @@ This requires referencing the package [ADatabaseMigrator](https://www.nuget.org/
 ```c#
 public class FixtureMigrator : ADatabaseFixture.IMigrator
 {
+    public const string VersioningTable = "SchemaVersionJournal";
+
     public async Task MigrateUp(string connectionString, CancellationToken? cancellationToken)
     {
         using var connection = new SqlConnection(connectionString);
@@ -117,6 +121,8 @@ This requires referencing the package [Microsoft.EntityFrameworkCore.SqlServer](
 ```c#
 public class FixtureMigrator : ADatabaseFixture.IMigrator
 {
+    public const string VersioningTable = "__EFMigrationsHistory";
+
     public async Task MigrateUp(string connectionString, CancellationToken? cancellationToken)
     {
         using var connection = new SqlConnection(connectionString);
@@ -132,6 +138,8 @@ This requires referencing the package [FluentMigrator.Runner](https://www.nuget.
 ```c#
 public class FixtureMigrator : ADatabaseFixture.IMigrator
 {
+    public const string VersioningTable = "VersionInfo";
+
     public Task MigrateUp(string connectionString, CancellationToken? cancellationToken)
     {
         using var serviceProvider = new ServiceCollection()
