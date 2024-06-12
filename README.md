@@ -94,7 +94,7 @@ public class Mytest : DatabaseTest
 ```
 
 ## Using schema migration libraries
-ADatabaseFixture makes it easy for you to plug in your own schema migration logic. Here are some examples of how to interface with a few migration libraries lik. All you need is to create a class that implements the interface `IMigrator`.
+ADatabaseFixture makes it easy for you to plug in your own schema migration logic. Here are some examples of how to interface with a few migration libraries. All you need is to create a class that implements the interface `IMigrator`.
 
 ### Example using [ADatabaseMigrator](https://github.com/carl-berg/ADatabaseMigrator)
 This requires referencing the package [ADatabaseMigrator](https://www.nuget.org/packages/ADatabaseMigrator)
