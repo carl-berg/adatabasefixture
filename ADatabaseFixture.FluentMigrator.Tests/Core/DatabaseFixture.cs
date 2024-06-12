@@ -6,8 +6,8 @@ using Xunit;
 namespace ADatabaseFixture.FluentMigrator.Tests.Core;
 
 public class DatabaseFixture() : DatabaseFixtureBase(
-    new SqlServerDatabaseAdapter(ConnectionFactory, DatabaseName()), 
-    FluentMigratorMigrator.Create<CreatePersonTable>(FluentMigrator.Database.SqlServer2016)), IAsyncLifetime
+    new SqlServerDatabaseAdapter(ConnectionFactory, DatabaseName()),
+    new FixtureMigrator()), IAsyncLifetime
 {
     private static string DatabaseName() => $"FluentMigrator_TestDatabase_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 

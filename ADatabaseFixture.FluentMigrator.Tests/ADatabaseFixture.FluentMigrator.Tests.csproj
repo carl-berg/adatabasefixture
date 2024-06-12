@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.35" />
 	  <PackageReference Include="DataDude" Version="0.8.0-preview.5" />
+    <PackageReference Include="FluentMigrator.Runner" Version="5.2.0" />
 	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageReference Include="Respawn" Version="6.2.1" />
     <PackageReference Include="Shouldly" Version="4.2.1" />
@@ -18,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ADatabaseFixture.FluentMigrator\ADatabaseFixture.FluentMigrator.csproj" />
     <ProjectReference Include="..\ADatabaseFixture\ADatabaseFixture.csproj" />
   </ItemGroup>
 
