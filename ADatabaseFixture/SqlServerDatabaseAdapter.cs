@@ -127,5 +127,5 @@ public class SqlServerDatabaseAdapter(
 
     public virtual string GetMasterConnectionString() => $@"Data Source={dataSource};Initial Catalog=master;{auth}";
 
-    public virtual string GetDatabaseConnectionString() => $@"Data Source={dataSource};Initial Catalog={databaseName};{auth}";
+    public virtual string GetDatabaseConnectionString() => $@"Data Source={dataSource};Initial Catalog={DatabaseName};{auth}";
 }

@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADatabaseFixture.ADatabaseM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADatabaseFixture.EfCoreMigration.Tests", "ADatabaseFixture.EfCoreMigration.Tests\ADatabaseFixture.EfCoreMigration.Tests.csproj", "{FF1391E7-01D1-414B-AB9B-E7FB708ED67E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADatabaseFixture.Tests", "ADatabaseFixture.Tests\ADatabaseFixture.Tests.csproj", "{863FD6E2-2DFD-4211-AD91-9AB8A1381BC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{FF1391E7-01D1-414B-AB9B-E7FB708ED67E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF1391E7-01D1-414B-AB9B-E7FB708ED67E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF1391E7-01D1-414B-AB9B-E7FB708ED67E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{863FD6E2-2DFD-4211-AD91-9AB8A1381BC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{863FD6E2-2DFD-4211-AD91-9AB8A1381BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{863FD6E2-2DFD-4211-AD91-9AB8A1381BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{863FD6E2-2DFD-4211-AD91-9AB8A1381BC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
